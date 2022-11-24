@@ -4,7 +4,6 @@ using MyApp.DataAccessLayer;
 using MyApp.DataAccessLayer.Infrastructure.IRepository;
 using MyApp.Models;
 using MyApp.Models.ViewModel;
-using XAct.Library.Settings;
 
 namespace MyAppWeb.Areas.Admin.Controllers
 {
@@ -22,7 +21,7 @@ namespace MyAppWeb.Areas.Admin.Controllers
 
         public IActionResult AllProducts()
         {
-            var products = _unitOfWork.Product.GetAll(includeProperties: "Category");//Category is navigation property
+            var products = _unitOfWork.Product.GetAll(includeProperties: "Category");//Category is navigation property or table name
 
             return Json(new { data = products });
         }
@@ -31,7 +30,7 @@ namespace MyAppWeb.Areas.Admin.Controllers
         public IActionResult Index()
         {
             //ProductVM productVM = new ProductVM();
-           // productVM.Products = _unitOfWork.Product.GetAll();
+            // productVM.Products = _unitOfWork.Product.GetAll();
             //var products = _unitOfWork.Product.GetAll(includeProperties: "Category");
             //return View(products);
             return View();
@@ -84,17 +83,17 @@ namespace MyAppWeb.Areas.Admin.Controllers
                     fileName = Guid.NewGuid().ToString() + "~" + file.FileName;
                     string filePath = Path.Combine(uploadDir, fileName);
 
-                    //For Deleting old image on clicking of edit
+                   // For Deleting old image on clicking of edit
                     if (VM.Product.ImageUrl != null)
                     {
-                        var oldImagePath = Path.Combine(_hostingEnvironment.WebRootPath,VM.Product.ImageUrl.Trim('\\'));
+                        var oldImagePath = Path.Combine(_hostingEnvironment.WebRootPath, VM.Product.ImageUrl.TrimStart('\\'));
 
                         if (System.IO.File.Exists(oldImagePath))
                         {
                             System.IO.File.Delete(oldImagePath);
                         }
                     }
-                    
+
                     using (var filestream = new FileStream(filePath, FileMode.Create))
                     {
                         file.CopyTo(filestream);
@@ -135,28 +134,29 @@ namespace MyAppWeb.Areas.Admin.Controllers
 
         #region DeleteAPI 
         [HttpDelete]
-        [ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            var product = _unitOfWork.Category.GetT(x => x.Id == id);
+            var product = _unitOfWork.Product.GetT(x => x.Id == id);
+            
             if (product == null)
             {
-                return Json(new {success=false,Error="Error while fetch"});
+                return Json(new { success = false, message = "Error while fetch" });
             }
 
             else
             {
-                var oldImagePath = Path.Combine(_hostingEnvironment.WebRootPath,product.image Trim('\\'));
+                var oldImagePath = Path.Combine(_hostingEnvironment.WebRootPath, product.ImageUrl.TrimStart('\\'));
 
                 if (System.IO.File.Exists(oldImagePath))
                 {
                     System.IO.File.Delete(oldImagePath);
                 }
+
+                _unitOfWork.Product.Delete(product);
+                _unitOfWork.Save();
+                return Json(new { success = true, message = "Deleted Successfully" });
             }
-            _unitOfWork.Category.Delete(product);
-            _unitOfWork.Save();
-            TempData["success"] = "Category successfully deleted !";
-            return RedirectToAction("Index");
+           
         }
         #endregion DeleteAPI
     }
