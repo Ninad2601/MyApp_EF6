@@ -10,6 +10,8 @@ namespace MyApp.DataAccessLayer.Infrastructure.IRepository
     {
         ICategoryRepository Category { get; }
         IProductRepository Product { get; }
+        ICartRepository Cart { get; }
+        IApplicationRepository ApplicationRepository { get; }
         void Save();
 
     }
