@@ -6,7 +6,9 @@ using Microsoft.Extensions.Hosting;
 using MyApp.DataAccessLayer;
 using MyApp.DataAccessLayer.Infrastructure.IRepository;
 using MyApp.DataAccessLayer.Infrastructure.Repository;
-
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using MyApp.CommonHelper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,8 +21,19 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddDefaultIdentity<IdentityUser>()
+builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+//Dependency Addition
+builder.Services.AddSingleton<IEmailSender, EmailSender>();
+//Set cookies in browser
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+    options.LoginPath = $"/Identity/Account/Login";
+    options.LogoutPath = $"/Identity/Account/Logout";
+});
+
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
