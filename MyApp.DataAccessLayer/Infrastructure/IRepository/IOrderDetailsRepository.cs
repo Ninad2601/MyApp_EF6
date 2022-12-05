@@ -7,9 +7,8 @@ using MyApp.Models;
 
 namespace MyApp.DataAccessLayer.Infrastructure.IRepository
 {
-    public interface ICartRepository:IRepository<Cart>
+    public interface IOrderDetailsRepository:IRepository<OrderDetail>
     {
-        int IncrementCartItem(Cart cart,int count);
-        int DecrementCartItem(Cart cart,int count);
+        void Update (OrderDetail orderDetail);
     }
 }
