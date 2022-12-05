@@ -9,5 +9,7 @@ namespace MyApp.Models.ViewModel
     public class CartVM
     {
         public IEnumerable<Cart> ListOfCart{ get; set; }=new List<Cart>();
+        //public double Total { get; set; }   
+        public OrderHeader OrderHeader { get; set; }
     }
 }
