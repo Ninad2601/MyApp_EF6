@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using MyApp.CommonHelper;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -38,5 +39,6 @@ namespace MyApp.Models
         public string PostalCode { get; set; }
         [Required]
         public string Name { get; set; }
+       // public OrderStatus orderStatus { get; set; }
     }
 }
